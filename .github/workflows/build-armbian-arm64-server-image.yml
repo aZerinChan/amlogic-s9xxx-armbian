@@ -369,7 +369,11 @@ jobs:
         working-directory: /builder
         if: ${{ steps.down.outputs.status == 'success' && !cancelled() }}
         run: |
-          sed -i 's/qemu-loongarch64//g' /armbian/lib/functions/host/prepare-host.sh
+
+          # 把 update-binfmts --enable qemu-loongarch64 替换为空命令
+          echo -e '#!/bin/bash\nexit 0' > /usr/local/bin/update-binfmts
+          chmod +x /usr/local/bin/update-binfmts
+          
           # Enable QEMU emulation for ARM cross-compilation
           docker run --rm --privileged multiarch/qemu-user-static --reset -p yes 2>/dev/null || true
 
